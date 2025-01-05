@@ -16,6 +16,7 @@ export async function POST(request: Request) {
             querySnapshot.forEach(async (docSnapshot) => {
                 await dbAdmin.collection("users").doc(docSnapshot.id).update({
                     name: name,
+                    subscribed: true,
                     subjects: userSubjects,
                     intervals: userIntervals,
                 }); 
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
             // Create new document
             await dbAdmin.collection("users").doc().set({
                 name: name,
+                subscribed: true,
                 email: emailLowerCase,
                 subjects: userSubjects,
                 intervals: userIntervals,
