@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/python": "^4.6.0",
     "firebase": "^11.1.0",
     "firebase-admin": "^13.0.2",
     "fs": "^0.0.1-security",
