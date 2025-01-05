@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
             // generate subj and body
             const pyinputs = { "yeardeltas": emailData.intervals, "fields": emailData.subjects };
-            const { stdout, stderr } = await execAsync(`python src/python/get_papers.py '${JSON.stringify(pyinputs)}'`);
+            const { stdout, stderr } = await execAsync(`python3 src/python/get_papers.py '${JSON.stringify(pyinputs)}'`);
             
             if (stderr) {
                 console.error('Python script error:', stderr);
