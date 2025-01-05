@@ -1,10 +1,4 @@
 import { dbAdmin } from "../../../lib/firebaseAdmin";
-import crypto from 'crypto';
-
-function generateUnsubscribeToken(email:string) {
-    const secret = process.env.UNSUBSCRIBE_SECRET;
-    return crypto.createHash('sha256').update(`${email}${secret}`).digest('hex');
-}
 
 export async function POST(request: Request) {
     try {
