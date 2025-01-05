@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 const FormComponent = ({ subjects, intervals }) => {
