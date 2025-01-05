@@ -1,7 +1,18 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-const FormComponent = ({ subjects, intervals }) => {
+interface Subject {
+  id: string;
+  display_name: string;
+  fields: { id: string; display_name: string }[];
+}
+
+interface FormComponentProps {
+  subjects: Subject[];
+  intervals: number[];
+}
+
+const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
   interface FormData {
     name: string;
     email: string;
@@ -30,7 +41,7 @@ const FormComponent = ({ subjects, intervals }) => {
   const watchedIntervals: number[] = watch("userIntervals", []);
 
 
-  const togglefields = (parentId, checked) => {
+  const togglefields = (parentId:string, checked:boolean) => {
     const subdomainIds = subjects.find((domain) => domain.id === parentId)?.fields.map((sub) => sub.id) || [];
     let updatedSubjects: string[] = [...watchedSubjects];
 
@@ -43,10 +54,22 @@ const FormComponent = ({ subjects, intervals }) => {
     console.log(updatedSubjects);
   };
 
-  const onSubmit = async (data) => {
+  interface FormData {
+    name: string;
+    email: string;
+    subscribed: boolean;
+    userIntervals: number[];
+    userSubjects: string[];
+  }
+
+  interface OnSubmitResponse {
+    ok: boolean;
+  }
+
+  const onSubmit = async (data: FormData): Promise<void> => {
     try {
       console.log("Form data:", data); // Debugging line to check form data
-      const response = await fetch('/api/submitForm', {
+      const response: OnSubmitResponse = await fetch('/api/submitForm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
