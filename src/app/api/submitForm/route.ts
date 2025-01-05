@@ -2,6 +2,7 @@ import { dbAdmin } from "../../../lib/firebaseAdmin";
 
 export async function POST(request: Request) {
     try {
+        console.log("DEBUG - request: ", request);
         const body = await request.json()
         const { name, email, subscribed, userIntervals, userSubjects } = body;
         if (!name || !email || !subscribed || !userIntervals || !userSubjects) {
