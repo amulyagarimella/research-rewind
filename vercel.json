@@ -2,6 +2,7 @@
     "rewrites": [{ "source": "/api/(.*)", "destination": "/api/$1" }],
     "builds": [
       {
+        "src": "src/python/get_papers.py",
         "use": "@vercel/python",
         "config": { "runtime": "python3.12" }
       }
