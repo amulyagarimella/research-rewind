@@ -1,4 +1,4 @@
-import { getFirestore, collection, query, where, getDocs, updateDoc } from "firebase/firestore";
+/*import { getFirestore, collection, query, where, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./firebase"
 
 async function unsubscribe(email) {
@@ -26,3 +26,4 @@ const email = urlParams.get("email");
 if (email) {
   unsubscribe(email);
 }
+*/

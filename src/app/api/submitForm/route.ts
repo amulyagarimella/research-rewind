@@ -1,6 +1,4 @@
-import { query, collection, where, getDocs, doc, updateDoc, setDoc } from "firebase/firestore";
 import { dbAdmin } from "../../../lib/firebaseAdmin";
-import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {

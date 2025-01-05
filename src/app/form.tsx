@@ -6,7 +6,7 @@ const FormComponent = ({ subjects, intervals }) => {
     name: string;
     email: string;
     subscribed: boolean;
-    userIntervals: Number[];
+    userIntervals: number[];
     userSubjects: string[];
   }
   
@@ -14,7 +14,7 @@ const FormComponent = ({ subjects, intervals }) => {
     name: "",
     email: "",
     subscribed: true,
-    userIntervals: [] as Number[],
+    userIntervals: [] as number[],
     userSubjects: [] as string[],
   }
 
@@ -27,7 +27,7 @@ const FormComponent = ({ subjects, intervals }) => {
   // const {register, handleSubmit, formState: { errors }, reset} = useForm();
 
   const watchedSubjects: string[] = watch("userSubjects", []);
-  const watchedIntervals: Number[] = watch("userIntervals", []);
+  const watchedIntervals: number[] = watch("userIntervals", []);
 
 
   const togglefields = (parentId, checked) => {
