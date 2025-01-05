@@ -3,10 +3,7 @@
       { "source": "/(.*)", "destination": "/" }
     ],
     "builds": [
-      { "src": "app/**/*", "use": "@vercel/next" },
+      { "src": "app/**/*", "use": "@vercel/node" },
       { "src": "python/**/*", "use": "@vercel/python" }
-    ],
-    "routes": [
-      { "src": "/api/sendEmail", "dest": "app/api/sendEmail/route.js" }
     ]
   }
