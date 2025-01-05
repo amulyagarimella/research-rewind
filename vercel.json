@@ -4,7 +4,7 @@
       {
         "src": "your_entry_file.py",
         "use": "@vercel/python",
-        "config": { "runtime": "python3.12.5" }
+        "config": { "runtime": "python3.12" }
       }
     ]
 }
