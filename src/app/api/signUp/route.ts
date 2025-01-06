@@ -1,4 +1,5 @@
 import { dbAdmin } from "../../../lib/firebaseAdmin";
+import { getBaseUrl } from "../../../lib/emailHelpers";
 
 export async function POST(request: Request) {
     try {
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
                 timezone: timezone,
             });
             
-            await fetch('/api/sendConfEmail', {
+            await fetch(`${getBaseUrl()}/api/sendConfEmail`, {
                 method: 'POST',
                 body: JSON.stringify({ name: name, email: emailLowerCase }),
             });
