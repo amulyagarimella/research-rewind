@@ -19,15 +19,16 @@ export async function POST(request:Request) {
         const q = dbAdmin.collection('users').where("email", "==", email).limit(1);
         const querySnapshot = await q.get(); 
         if (!querySnapshot.empty) {
-                // Update existing document
-                querySnapshot.forEach(async (docSnapshot) => {
-                        await dbAdmin.collection("users").doc(docSnapshot.id).update({
-                                subscribed: false,
-                        }); 
-                });
-                return new Response(JSON.stringify({ success: true }), { status: 201 });
+            await querySnapshot.docs[0].ref.delete();
+            // Update existing document
+            /*querySnapshot.forEach(async (docSnapshot) => {
+                await dbAdmin.collection("users").doc(docSnapshot.id).update({
+                    subscribed: false,
+                }); 
+            });*/
+            return new Response(JSON.stringify({ success: true }), { status: 201 });
         } else {
-                return new Response(JSON.stringify({ success: false }), { status: 404 });
+            return new Response(JSON.stringify({ success: false }), { status: 404 });
         }
     } catch (error) {
         console.error('Error unsubscribing:', error);
