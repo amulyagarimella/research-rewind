@@ -3,6 +3,7 @@ import { transporter } from "../../../lib/nodemailer";
 import { Paper, get_papers } from "./get_papers";
 import { DateTime } from "ts-luxon";
 import crypto from 'crypto';
+import { NextRequest } from "next/server";
 
 function generateUnsubscribeToken(email:string) {
     const secret = process.env.UNSUBSCRIBE_SECRET;
@@ -30,8 +31,15 @@ const getBaseUrl = () => {
     return "http://localhost:3000";
 };
 
-export async function POST() {
+export async function GET(request: NextRequest) {
     try {
+        const authHeader = request.headers.get('authorization');
+        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return new Response('Unauthorized', {
+            status: 401,
+            });
+        }
+        
         const emailsRef = dbAdmin.collection('users').where('subscribed', '==', true);
         const snapshot = await emailsRef.get();
         // console.log("DEBUG - snapshot: ", snapshot);
