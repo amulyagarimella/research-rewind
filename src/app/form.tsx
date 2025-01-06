@@ -69,7 +69,8 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
 
   interface OnSubmitResponse {
     ok: boolean;
-  }
+    json: () => Promise<any>;
+  };
 
   const onSubmit = async (data: FormData): Promise<void> => {
     try {
@@ -82,6 +83,8 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         body: JSON.stringify(data),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
         reset(defaults, {
           keepValues: false,
@@ -89,6 +92,13 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         setSelectAllIntervalsChecked(false); // Uncheck the "Select all" button
         setIsSubmitted(true); 
         setSubmissionSuccessful(true);
+
+        if (result.payload.newAcc) {
+          fetch('/api/sendConfEmail', {
+              method: 'POST',
+              body: JSON.stringify({ name: data.name, email: data.email }),
+          });
+      }
       } else {
         setIsSubmitted(true);
         setSubmissionSuccessful(false);

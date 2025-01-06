@@ -2,6 +2,7 @@ import { dbAdmin } from "../../../lib/firebaseAdmin";
 import { getBaseUrl } from "../../../lib/emailHelpers";
 
 export async function POST(request: Request) {
+    let newAcc = false;
     try {
         const body = await request.json()
         const { name, email, subscribed, userIntervals, userSubjects, timezone } = body;
@@ -34,13 +35,14 @@ export async function POST(request: Request) {
                 intervals: userIntervals,
                 timezone: timezone,
             });
-            
-            fetch(`${getBaseUrl()}/api/sendConfEmail`, {
-                method: 'POST',
-                body: JSON.stringify({ name: name, email: emailLowerCase }),
-            });
+            newAcc = true;
         }
-        return new Response(JSON.stringify({ success: true }), { status: 201 });
+        return new Response(JSON.stringify({ 
+            success: true, 
+            payload: {
+                newAcc: newAcc,
+            }, 
+        }), { status: 201 });
     } catch (error) {
         console.log(error);
         return new Response(JSON.stringify({ success: false }), { status: 500 });
