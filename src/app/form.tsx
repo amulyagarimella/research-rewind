@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { DateTime } from 'luxon';
 
 interface Subject {
   id: string;
@@ -100,7 +101,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
+      <div className="form">
         <label htmlFor="name" className="main">Name</label>
         <Controller
           name="name"
@@ -115,7 +116,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         />
       </div>
 
-      <div>
+      <div className="form">
         <label htmlFor="email" className="main">Email</label>
         <Controller
           name="email"
@@ -131,9 +132,8 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
       </div>
 
 
-        <div>
-            <label className="main">Years back</label>
-            <label key="all">
+        <div className="form">
+            <label className="main">Years back (to date)</label> <label key="all">
                 <input
                 type="checkbox"
                 checked={selectAllIntervalsChecked}
@@ -146,6 +146,9 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
                 }}
                 />Select all
             </label>
+            
+            <p className="description">You'll receive papers from each number of years back to the date.</p>
+            
 
             {intervals.map((interval) => (
             <div key={interval}><label key={interval}>
@@ -159,16 +162,19 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
                     setValue("userIntervals", updatedIntervals);
                 }}
                 />
-                {interval}
+                {interval} {interval === 1 ? "year" : "years"} back 
+                <span className="description"> (from today: {DateTime.now().minus({ years: interval }).toFormat("DD")})</span>
             </label>
+            
             </div>
             ))}
+            
         </div>
 
-      <div>
+      <div className="form">
         <label className="main">Subjects</label>
         {subjects.map((domain) => (
-          <div key={domain.id}>
+          <div key={domain.id} className="domain">
             <label>
               <input
                 type="checkbox"
@@ -177,7 +183,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
               />
               {domain.display_name}
             </label>
-            <div style={{ marginLeft: "1em" }}>
+            <div style={{ marginLeft: "1em" }} className="subfield">
               {domain.fields.map((sub) => (
                 <div key={sub.id}>
                   <label>

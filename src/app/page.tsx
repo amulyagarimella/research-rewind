@@ -15,7 +15,7 @@ console.log(process.env.NEXT_PUBLIC_BASE_URL);
 export default function App() {
   return (
     <div>
-      <div className="flex flex-col items-center w-full max-w-md mx-auto overflow-hidden">
+      <div className="flex flex-col items-center w-full max-w-lg mx-auto overflow-hidden">
         <h1>Research Rewind</h1>
         <p>Receive daily emails with the top Nature papers from decades past.</p>
       
