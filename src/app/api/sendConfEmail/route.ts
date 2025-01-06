@@ -11,9 +11,9 @@ export async function POST(request: Request) {
 
         const emailSubject = "Research Rewind - Confirmation 🔬";
 
-        const editPrefs = "<br><br>" + "Edit your preferences anytime by " + generateHTMLLink(getBaseUrl(), "re-signing up") + " with the same email address." + "<br><br>"
+        const editPrefs = "<br><br>" + "Edit your preferences anytime by " + generateHTMLLink(getBaseUrl(), "re-signing up") + " with the same email address." + "<br>"
 
-        const emailBody = "Hi " + name + ", <br><br>Thanks for signing up for Research Rewind. You'll start receiving papers daily at 9am ET!" + editPrefs + generateHTMLLink(feedbackLink, "Feedback?") + "<br><br>" + generateHTMLLink(unsubscribeLink, "Unsubscribe");
+        const emailBody = "Hi " + name + ", <br><br>Thanks for signing up for Research Rewind! You'll start receiving papers daily at 6am ET." + editPrefs + generateHTMLLink(feedbackLink, "Feedback?") + "<br>" + generateHTMLLink(unsubscribeLink, "Unsubscribe");
         
         await transporter.sendMail({
             from: `Research Rewind <${process.env.EMAIL_ADDRESS}>`,

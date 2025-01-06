@@ -45,9 +45,9 @@ export async function GET(request: NextRequest) {
 
             // console.log("DEBUG - paper body", paperBody)
 
-            const editPrefs = "<br><br>" + "Edit your preferences anytime by " + generateHTMLLink(getBaseUrl(), "re-signing up") + " with the same email address." + "<br><br>"
+            const editPrefs = "Edit your preferences anytime by " + generateHTMLLink(getBaseUrl(), "re-signing up") + " with the same email address." + "<br>"
 
-            const emailBody = "Hi " + emailData.name + ",<br><br>Here's your research rewind for today.<br><br>" + paperBody + editPrefs + generateHTMLLink(feedbackLink, "Feedback?") + "<br><br>" + generateHTMLLink(unsubscribeLink, "Unsubscribe");
+            const emailBody = "Hi " + emailData.name + ",<br><br>Here's your research rewind for today.<br><br>" + paperBody + editPrefs + generateHTMLLink(feedbackLink, "Feedback?") + "<br>" + generateHTMLLink(unsubscribeLink, "Unsubscribe");
 
             // console.log("DEBUG - email HTML", emailBody);
             
