@@ -35,17 +35,15 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
   const [selectAllIntervalsChecked, setSelectAllIntervalsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { control, handleSubmit, reset, watch, setValue } = useForm<FormData>({
     defaultValues: defaults,
   });
 
-  // const {register, handleSubmit, formState: { errors }, reset} = useForm();
-
   const watchedSubjects: string[] = watch("userSubjects", []);
   const watchedIntervals: number[] = watch("userIntervals", []);
 
-
-  const togglefields = (parentId:string, checked:boolean) => {
+  const togglefields = (parentId: string, checked: boolean) => {
     const subdomainIds = subjects.find((domain) => domain.id === parentId)?.fields.map((sub) => sub.id) || [];
     let updatedSubjects: string[] = [...watchedSubjects];
 
@@ -58,21 +56,13 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
     console.log(updatedSubjects);
   };
 
-  interface FormData {
-    name: string;
-    email: string;
-    subscribed: boolean;
-    userIntervals: number[];
-    userSubjects: string[];
-    timezone: string;
-  }
-
   interface OnSubmitResponse {
     ok: boolean;
     json: () => Promise<any>;
   };
 
   const onSubmit = async (data: FormData): Promise<void> => {
+    setLoading(true);
     try {
       console.log("Form data:", data); // Debugging line to check form data
       const response: OnSubmitResponse = await fetch('/api/signUp', {
@@ -82,7 +72,6 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         },
         body: JSON.stringify(data),
       });
-
 
       if (response.ok) {
         reset(defaults, {
@@ -107,6 +96,8 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
       }
     } catch (error) {
       console.error('Error submitting form: ', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,45 +133,43 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         />
       </div>
 
-
-        <div className="form">
-            <label className="main">Years back (to date)</label> <label key="all">
-                <input
-                type="checkbox"
-                checked={selectAllIntervalsChecked}
-                onChange={(e) => {
-                    const updatedIntervals = e.target.checked
-                    ? [...watchedIntervals].concat(intervals)
-                    : [];
-                    setSelectAllIntervalsChecked(e.target.checked); // Update the state
-                    setValue("userIntervals", updatedIntervals);
-                }}
-                />Select all
-            </label>
-            
-            <p className="description">You&#39;ll receive papers from each number of years back to the date.</p>
-            
-
-            {intervals.map((interval) => (
-            <div key={interval}><label key={interval}>
-                <input
+      <div className="form">
+        <label className="main">Years back (to date)</label> 
+        <label key="all">
+          <input
+            type="checkbox"
+            checked={selectAllIntervalsChecked}
+            onChange={(e) => {
+              const updatedIntervals = e.target.checked
+                ? [...watchedIntervals].concat(intervals)
+                : [];
+              setSelectAllIntervalsChecked(e.target.checked); // Update the state
+              setValue("userIntervals", updatedIntervals);
+            }}
+          />Select all
+        </label>
+        
+        <p className="description">You&#39;ll receive papers from each number of years back to the date.</p>
+        
+        {intervals.map((interval) => (
+          <div key={interval}>
+            <label key={interval}>
+              <input
                 type="checkbox"
                 checked={watchedIntervals.includes(interval)}
                 onChange={(e) => {
-                    const updatedIntervals = e.target.checked
+                  const updatedIntervals = e.target.checked
                     ? [...watchedIntervals, interval]
                     : watchedIntervals.filter((id) => id !== interval); 
-                    setValue("userIntervals", updatedIntervals);
+                  setValue("userIntervals", updatedIntervals);
                 }}
-                />
-                {interval} {interval === 1 ? "year" : "years"} back 
-                <span className="description"> (from today: {DateTime.now().minus({ years: interval }).toFormat("DD")})</span>
+              />
+              {interval} {interval === 1 ? "year" : "years"} back 
+              <span className="description"> (from today: {DateTime.now().minus({ years: interval }).toFormat("DD")})</span>
             </label>
-            
-            </div>
-            ))}
-            
-        </div>
+          </div>
+        ))}
+      </div>
 
       <div className="form">
         <label className="main">Subjects</label>
@@ -218,8 +207,11 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         ))}
       </div>
 
-      <button type="submit" className="main">Submit 
-      </button>{isSubmitted && submissionSuccessful && <span className="thanks">Thanks for signing up!</span>}{isSubmitted && !submissionSuccessful && <span className="error">Please fill out all fields before submitting!</span>}
+      <button type="submit" className="main" disabled={loading}>
+        {loading ? "Submitting..." : "Submit"}
+      </button>
+      {isSubmitted && submissionSuccessful && <span className="thanks">Thanks for signing up!</span>}
+      {isSubmitted && !submissionSuccessful && <span className="error">Please fill out all fields before submitting!</span>}
     </form>
   );
 };
