@@ -83,7 +83,6 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
 
       if (response.ok) {
         reset(defaults, {
@@ -93,6 +92,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         setIsSubmitted(true); 
         setSubmissionSuccessful(true);
 
+        const result = await response.json();
         if (result.payload.newAcc) {
           fetch('/api/sendConfEmail', {
               method: 'POST',
