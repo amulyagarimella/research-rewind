@@ -1,7 +1,7 @@
 import { dbAdmin } from "../../../lib/firebaseAdmin";
 import crypto from 'crypto';
 
-export async function POST(request:Request) {
+export async function GET(request:Request) {
     const url = new URL(request.url);
     const email = url.searchParams.get('email');
     const token = url.searchParams.get('token');
