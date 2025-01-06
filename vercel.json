@@ -1,6 +1,6 @@
 {
     "crons": [{
       "path": "/api/sendDailyEmail",
-      "schedule": "50 6 * * *"
+      "schedule": "45 7 * * *"
     }]
   }
