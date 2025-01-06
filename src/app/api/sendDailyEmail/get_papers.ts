@@ -17,7 +17,7 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
     const org_id = "https://openalex.org/P4310319908";
 
     const papers: Paper[] = [];
-    for (var i = 0; i < yeardeltas.length; i++) {
+    for (let i = 0; i < yeardeltas.length; i++) {
         const prev_date = today.minus({ years: yeardeltas[i] });
         const prev_date_str = prev_date.toISODate();
         //console.log("DEBUG - prev_date_str: ", prev_date_str);
