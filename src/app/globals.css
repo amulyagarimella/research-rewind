@@ -1,6 +1,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css?family=JetBrains+Mono&display=swap');
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
