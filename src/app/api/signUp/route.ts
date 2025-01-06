@@ -35,7 +35,7 @@ export async function POST(request: Request) {
                 timezone: timezone,
             });
             
-            await fetch(`${getBaseUrl()}/api/sendConfEmail`, {
+            fetch(`${getBaseUrl()}/api/sendConfEmail`, {
                 method: 'POST',
                 body: JSON.stringify({ name: name, email: emailLowerCase }),
             });
