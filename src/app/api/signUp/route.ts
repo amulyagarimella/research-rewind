@@ -9,11 +9,7 @@ export async function POST(request: Request) {
             return new Response(JSON.stringify({ success: false }), { status: 400 });
         }
         const emailLowerCase = email.toLowerCase();
-        const subjectIds = userSubjects.map((s:string) => {
-            if (s.includes('field')) { 
-                s.replace(/\D/g, '') 
-            }
-        });
+        const subjectIds = userSubjects.filter((s:string) => (s.includes("field"))).map((s:string) => s.replace(/\D/g, ''));
         const q = dbAdmin.collection("users").where("email", "==", emailLowerCase).limit(1);
         const querySnapshot = await q.get();
 
