@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { DateTime } from 'luxon';
 
-var http = require('http');
+const http = require('http');
 
 interface Subject {
   id: string;
