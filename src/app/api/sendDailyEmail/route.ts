@@ -21,6 +21,12 @@ function formatAuthors(authors:string[]) {
     return authors.join(", ");
 }
 
+export const getBaseUrl = () => {
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" || process.env.NEXT_PUBLIC_VERCEL_ENV === "production")
+      return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+    return "http://localhost:3000";
+};
+
 export async function POST() {
     try {
         const emailsRef = dbAdmin.collection('users').where('subscribed', '==', true);
@@ -29,7 +35,7 @@ export async function POST() {
         const emailPromises = snapshot.docs.map(async (doc) => {
             const emailData = doc.data();
             const unsubscribeToken = generateUnsubscribeToken(emailData.email);
-            const unsubscribeLink = `${process.env.NEXT_PUBLIC_BASE_URL}/api/unsubscribe?email=${emailData.email}&token=${unsubscribeToken}`;
+            const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${emailData.email}&token=${unsubscribeToken}`;
 
             const papers = await get_papers(emailData.intervals, emailData.subjects);
 
@@ -47,7 +53,7 @@ export async function POST() {
 
             // console.log("DEBUG - paper body", paperBody)
 
-            const editPrefs = process.env.NEXT_PUBLIC_BASE_URL ? "<br><br>" + "Edit your preferences anytime by " + generateHTMLLink(process.env.NEXT_PUBLIC_BASE_URL, "re-signing up") + " with the same email address." + "<br><br>" : "";
+            const editPrefs = "<br><br>" + "Edit your preferences anytime by " + generateHTMLLink(getBaseUrl(), "re-signing up") + " with the same email address." + "<br><br>"
 
             const emailBody = "Hi " + emailData.name + ",<br><br>Here's your research rewind for today.<br><br>" + paperBody + editPrefs + generateHTMLLink(feedbackLink, "Feedback?") + "<br><br>" + generateHTMLLink(unsubscribeLink, "Unsubscribe");
 
