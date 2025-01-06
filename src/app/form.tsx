@@ -92,13 +92,14 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
         setIsSubmitted(true); 
         setSubmissionSuccessful(true);
 
-        const result = await response.json();
-        if (result.payload.newAcc) {
-          await fetch('/api/sendConfEmail', {
-              method: 'POST',
-              body: JSON.stringify({ name: data.name, email: data.email }),
-          });
-        }
+        await response.json().then((result) => {
+          if (result.payload.newAcc) {
+            fetch('/api/sendConfEmail', {
+                method: 'POST',
+                body: JSON.stringify({ name: data.name, email: data.email }),
+            })
+          };
+        });
       } else {
         setIsSubmitted(true);
         setSubmissionSuccessful(false);
