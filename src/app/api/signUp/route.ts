@@ -33,6 +33,11 @@ export async function POST(request: Request) {
                 intervals: userIntervals,
                 timezone: timezone,
             });
+            
+            await fetch('/api/sendConfEmail', {
+                method: 'POST',
+                body: JSON.stringify({ name: name, email: emailLowerCase }),
+            });
         }
         return new Response(JSON.stringify({ success: true }), { status: 201 });
     } catch (error) {

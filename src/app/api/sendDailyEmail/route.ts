@@ -2,18 +2,8 @@ import { dbAdmin } from "../../../lib/firebaseAdmin";
 import { transporter } from "../../../lib/nodemailer";
 import { Paper, get_papers } from "./get_papers";
 import { DateTime } from "ts-luxon";
-import crypto from 'crypto';
 import { NextRequest } from "next/server";
-
-function generateUnsubscribeToken(email:string) {
-    const secret = process.env.UNSUBSCRIBE_SECRET;
-    return crypto.createHash('sha256').update(`${email}${secret}`).digest('hex');
-}
-const feedbackLink="https://tally.so/r/3X10Y4"
-
-function generateHTMLLink(link:string, text:string) {
-    return "<a href=\"" + link + "\"  target=\"_blank\" rel=\"noopener noreferrer\">" + text + "</a>";
-}
+import { generateUnsubscribeToken, feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
 
 function formatAuthors(authors:string[]) {
     if (authors.length > 3) {
@@ -21,15 +11,6 @@ function formatAuthors(authors:string[]) {
     }
     return authors.join(", ");
 }
-
-const getBaseUrl = () => {
-    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
-        return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-    } else if (process.env.NEXT_PUBLIC_VERCEL_ENV === "preview") {
-        return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-    }
-    return "http://localhost:3000";
-};
 
 export async function GET(request: NextRequest) {
     try {
