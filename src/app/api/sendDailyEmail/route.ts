@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
             // console.log("DEBUG - email HTML", emailBody);
             
             await transporter.sendMail({
-                from: process.env.EMAIL_ADDRESS,
+                from: `Research Rewind <${process.env.EMAIL_ADDRESS}>`,
                 to: emailData.email,
                 subject: emailSubject,
                 html: emailBody,
