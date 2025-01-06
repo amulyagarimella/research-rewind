@@ -147,7 +147,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
                 />Select all
             </label>
             
-            <p className="description">You'll receive papers from each number of years back to the date.</p>
+            <p className="description">You&#39;ll receive papers from each number of years back to the date.</p>
             
 
             {intervals.map((interval) => (
