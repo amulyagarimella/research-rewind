@@ -1,0 +1,67 @@
+
+import { DateTime } from "ts-luxon";
+// 2025-01-06: Not using the OpenAlex SDK since it still uses the old OpenAlex API - concepts instead of fields/subfields
+
+export interface Paper { 
+    year_delta: number,
+    title: string,
+    publication_date: string,
+    main_field: string,
+    authors: string[],
+    doi: string,
+    url: string,
+}
+
+export async function get_papers (yeardeltas:number[], fields:string[]) {
+    const today = DateTime.now().setZone('America/New_York');
+    const org_id = "https://openalex.org/P4310319908";
+
+    const papers: Paper[] = [];
+    for (var i = 0; i < yeardeltas.length; i++) {
+        const prev_date = today.minus({ years: yeardeltas[i] });
+        const prev_date_str = prev_date.toISODate();
+        //console.log("DEBUG - prev_date_str: ", prev_date_str);
+
+        const filters = new Map<String,String>([
+            ["publication_date", prev_date_str],
+            ["topics.field.id", fields.join('|')],
+            ["locations.source.host_organization", org_id],
+        ])
+        const openalex_filter = [...filters].map(([k, v]) => `${k}:${v}`).join(',');
+
+        /*console.log("DEBUG - url:", 'https://api.openalex.org/works?' + new URLSearchParams({
+            filter: openalex_filter,
+            sort: 'cited_by_count:desc',
+            page: '1',
+            per_page: '1',
+        }).toString());*/
+
+        await fetch('https://api.openalex.org/works?' + new URLSearchParams({
+            filter: openalex_filter,
+            sort: 'cited_by_count:desc',
+            page: '1',
+            per_page: '1',
+        }).toString()).then((response) => {
+            return response.json();
+        })  
+        .then((data) => {
+            const openalex_result = data.results;
+            if (openalex_result.length > 0) {
+                const res = openalex_result[0]
+                //console.log("DEBUG - res: ", res);
+                const paper = {
+                    year_delta: yeardeltas[i],
+                    title: res.title,
+                    publication_date: res.publication_date,
+                    main_field: res.topics[0].subfield.display_name,
+                    authors: res.authorships.map((author:any) => author.author.display_name),
+                    doi: res.doi,
+                    url: res.primary_location.landing_page_url,
+                }
+                papers.push(paper);
+            }
+        });
+    }
+    //console.log("DEBUG - papers: ", papers);
+    return papers;
+}
