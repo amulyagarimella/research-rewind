@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { DateTime } from 'luxon';
-
-const http = require('http');
+import http from 'http';
 
 interface Subject {
   id: string;
