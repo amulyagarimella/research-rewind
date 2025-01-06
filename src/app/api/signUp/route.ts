@@ -1,5 +1,4 @@
 import { dbAdmin } from "../../../lib/firebaseAdmin";
-import { getBaseUrl } from "../../../lib/emailHelpers";
 
 export async function POST(request: Request) {
     let newAcc = false;
