@@ -13,10 +13,14 @@
   }
 }
 
+input, input::placeholder, body, button { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  font-family: 'JetBrains Mono', serif;
+}
+
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: serif;
   margin-left: 1em;
   margin-top: 1em;
 }
@@ -33,8 +37,17 @@ input[type="checkbox"] {
   margin-right: 0.5em;
 }
 
-div,button {
+div {
   margin-top: 0.5em;
+}
+
+button {
+  margin-top: 1em;
+  font-size: 1em;
+}
+
+.error, .thanks {
+  padding-left: 1em;
 }
 
 .error {
@@ -43,5 +56,5 @@ div,button {
 
 .thanks {
   color: green;
-  margin-left: 1em;
 }
+

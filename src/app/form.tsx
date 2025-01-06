@@ -19,6 +19,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
     subscribed: boolean;
     userIntervals: number[];
     userSubjects: string[];
+    timezone: string;
   }
   
   const defaults = {
@@ -27,10 +28,12 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
     subscribed: true,
     userIntervals: [] as number[],
     userSubjects: [] as string[],
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   }
 
   const [selectAllIntervalsChecked, setSelectAllIntervalsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
   const { control, handleSubmit, reset, watch, setValue } = useForm<FormData>({
     defaultValues: defaults,
   });
@@ -60,6 +63,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
     subscribed: boolean;
     userIntervals: number[];
     userSubjects: string[];
+    timezone: string;
   }
 
   interface OnSubmitResponse {
@@ -69,7 +73,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
   const onSubmit = async (data: FormData): Promise<void> => {
     try {
       console.log("Form data:", data); // Debugging line to check form data
-      const response: OnSubmitResponse = await fetch('/api/submitForm', {
+      const response: OnSubmitResponse = await fetch('/api/signUp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,9 +86,12 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
           keepValues: false,
         });
         setSelectAllIntervalsChecked(false); // Uncheck the "Select all" button
-        setIsSubmitted(true); // Show thank you message
+        setIsSubmitted(true); 
+        setSubmissionSuccessful(true);
       } else {
-        console.error('Error submitting form');
+        setIsSubmitted(true);
+        setSubmissionSuccessful(false);
+        console.error('Error submitting form: ', response);
       }
     } catch (error) {
       console.error('Error submitting form: ', error);
@@ -195,7 +202,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
       </div>
 
       <button type="submit" className="main">Submit 
-      </button>{isSubmitted && <span className="thanks">Thanks for signing up!</span>}
+      </button>{isSubmitted && submissionSuccessful && <span className="thanks">Thanks for signing up!</span>}{isSubmitted && !submissionSuccessful && <span className="error">Please fill out all fields before submitting!</span>}
     </form>
   );
 };
