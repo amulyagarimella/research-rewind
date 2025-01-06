@@ -21,9 +21,8 @@ function formatAuthors(authors:string[]) {
     return authors.join(", ");
 }
 
-export async function POST(request: Request) {
+export async function POST() {
     try {
-        // console.log("DEBUG - request: ", request);
         const emailsRef = dbAdmin.collection('users').where('subscribed', '==', true);
         const snapshot = await emailsRef.get();
         // console.log("DEBUG - snapshot: ", snapshot);

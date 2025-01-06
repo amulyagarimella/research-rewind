@@ -22,7 +22,7 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
         const prev_date_str = prev_date.toISODate();
         //console.log("DEBUG - prev_date_str: ", prev_date_str);
 
-        const filters = new Map<String,String>([
+        const filters = new Map<string,string>([
             ["publication_date", prev_date_str],
             ["topics.field.id", fields.join('|')],
             ["locations.source.host_organization", org_id],
