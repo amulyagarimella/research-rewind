@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { DateTime } from 'luxon';
 
+var http = require('http');
+
 interface Subject {
   id: string;
   display_name: string;
@@ -94,7 +96,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
 
         await response.json().then((result) => {
           if (result.payload.newAcc) {
-            fetch('/api/sendConfEmail', {
+            http.request('/api/sendConfEmail', {
                 method: 'POST',
                 body: JSON.stringify({ name: data.name, email: data.email }),
             })
