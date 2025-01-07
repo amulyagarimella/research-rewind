@@ -21,6 +21,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "require-tsx": "^0.1.0",
+    "resend": "^4.0.1",
     "tls": "^0.0.1",
     "ts-luxon": "^5.0.6"
   },

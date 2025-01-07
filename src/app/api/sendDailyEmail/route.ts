@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
                 return;
             }
 
-            const emailSubject = "Research Rewind " + DateTime.now().setZone('America/New_York').toISODate() + " 🔬";
+            const emailSubject = "Research Rewind " + DateTime.now().setZone('America/New_York').toISODate();
  
             const paperBody = papers.map((paper : Paper) => 
                 "<b>" + paper.year_delta + " year" + (paper.year_delta > 1 ? "s" : "") + " ago (" + paper.publication_date + "):</b> " + generateHTMLLink(paper.doi, paper.title) + " - " + formatAuthors(paper.authors) + " <br>(Topic: " + paper.main_field + ")<br><br>"
