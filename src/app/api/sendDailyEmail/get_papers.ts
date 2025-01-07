@@ -14,7 +14,7 @@ export interface Paper {
 
 export async function get_papers (yeardeltas:number[], fields:string[]) {
     const today = DateTime.now().setZone('America/New_York');
-    const org_id = "https://openalex.org/P4310319908";
+    const org_id = "https://openalex.org/S137773608|https://openalex.org/S4306400194";
 
     const papers: Paper[] = [];
     for (let i = 0; i < yeardeltas.length; i++) {
@@ -25,7 +25,7 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
         const filters = new Map<string,string>([
             ["publication_date", prev_date_str],
             ["topics.field.id", fields.join('|')],
-            ["locations.source.host_organization", org_id],
+            ["locations.source.id", org_id],
         ])
         const openalex_filter = [...filters].map(([k, v]) => `${k}:${v}`).join(',');
 
