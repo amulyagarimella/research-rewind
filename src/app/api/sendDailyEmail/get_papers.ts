@@ -36,32 +36,33 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
             per_page: '1',
         }).toString());*/
 
-        await fetch('https://api.openalex.org/works?' + new URLSearchParams({
+        const response = await fetch('https://api.openalex.org/works?' + new URLSearchParams({
             filter: openalex_filter,
             sort: 'cited_by_count:desc',
             page: '1',
             per_page: '1',
-        }).toString()).then((response) => {
-            return response.json();
-        })  
-        .then((data) => {
+        }).toString());
+
+        if (response.ok) {
+            const data = await response.json();
             const openalex_result = data.results;
             if (openalex_result.length > 0) {
-                const res = openalex_result[0]
-                //console.log("DEBUG - res: ", res);
+                const res = openalex_result[0];
                 const paper = {
                     year_delta: yeardeltas[i],
                     title: res.title,
                     publication_date: res.publication_date,
                     main_field: res.topics[0].subfield.display_name,
-                    authors: res.authorships.map((author:any) => author.author.display_name),
+                    authors: res.authorships.map((author: any) => author.author.display_name),
                     doi: res.doi,
                     url: res.primary_location.landing_page_url,
-                }
+                };
                 papers.push(paper);
             }
-        });
+        } else {
+            console.error('OpenAlex API request failed');
+        }
     }
-    //console.log("DEBUG - papers: ", papers);
+    // console.log("DEBUG - papers: ", papers);
     return papers;
 }
