@@ -16,7 +16,7 @@ export async function POST(request: Request) {
         const emailBody = "Hi " + name + ", <br><br>Thanks for signing up for Research Rewind! You'll start receiving papers daily at 6am ET.<br>" + editPrefs + generateHTMLLink(feedbackLink, "Feedback?") + "<br>" + generateHTMLLink(unsubscribeLink, "Unsubscribe");
         
         await mg.messages.create('researchrewind.xyz', {
-            from: "Research Rewind <amulya@researchrewind.xyz>",
+            from: '"Research Rewind" <amulya@researchrewind.xyz>',
             to: [email],
             subject: emailSubject,
             html: emailBody,
