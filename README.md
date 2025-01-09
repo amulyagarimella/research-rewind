@@ -1,3 +1,3 @@
 Receive daily emails with the top Nature papers from decades past.
 
-[to come!]
+Built with the [OpenAlex]([url](https://openalex.org/)) API.
