@@ -1,4 +1,4 @@
-import { transporter } from "../../../lib/nodemailer";
+import { mg } from "../../../lib/mailgun";
 import { generateUnsubscribeToken, feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
 
 export async function POST(request: Request) {
@@ -15,9 +15,9 @@ export async function POST(request: Request) {
 
         const emailBody = "Hi " + name + ", <br><br>Thanks for signing up for Research Rewind! You'll start receiving papers daily at 6am ET.<br>" + editPrefs + generateHTMLLink(feedbackLink, "Feedback?") + "<br>" + generateHTMLLink(unsubscribeLink, "Unsubscribe");
         
-        await transporter.sendMail({
-            from: `Research Rewind <${process.env.EMAIL_ADDRESS}>`,
-            to: email,
+        await mg.messages.create('researchrewind.xyz', {
+            from: "Research Rewind <amulya@researchrewind.xyz>",
+            to: [email],
             subject: emailSubject,
             html: emailBody,
         });
