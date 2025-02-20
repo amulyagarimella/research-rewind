@@ -17,7 +17,7 @@ export default function App() {
     <div>
       <div className="flex flex-col items-center w-full max-w-lg mx-auto overflow-hidden">
         <h1>Research Rewind</h1>
-        <p>Receive daily emails with the top Nature papers from decades past.</p>
+        <p>Receive daily emails with the top papers from decades past.</p>
       
         <h2>Sign up</h2>
         <Form subjects={subjects} intervals={intervals}></Form>
