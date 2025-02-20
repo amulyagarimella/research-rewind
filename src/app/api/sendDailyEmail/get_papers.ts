@@ -25,7 +25,7 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
         const filters = new Map<string,string>([
             ["publication_date", prev_date_str],
             ["topics.field.id", fields.join('|')],
-            ["locations.source.id", org_id],
+            // ["locations.source.id", org_id],
         ])
         const openalex_filter = [...filters].map(([k, v]) => `${k}:${v}`).join(',');
 
