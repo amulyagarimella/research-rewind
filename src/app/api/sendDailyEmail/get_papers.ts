@@ -60,6 +60,7 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
                 papers.push(paper);
             }
         } else {
+            console.log("DEBUG - response: ", response);
             console.error('OpenAlex API request failed');
         }
     }
