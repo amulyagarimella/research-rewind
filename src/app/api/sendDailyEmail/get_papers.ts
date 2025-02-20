@@ -14,7 +14,7 @@ export interface Paper {
 
 export async function get_papers (yeardeltas:number[], fields:string[]) {
     const today = DateTime.now().setZone('America/New_York');
-    const org_id = "https://openalex.org/S137773608";
+    // const org_id = "https://openalex.org/S137773608";
 
     const papers: Paper[] = [];
     for (let i = 0; i < yeardeltas.length; i++) {
