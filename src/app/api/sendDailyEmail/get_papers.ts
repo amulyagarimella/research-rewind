@@ -25,24 +25,25 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
         const filters = new Map<string,string>([
             ["publication_date", prev_date_str],
             ["topics.field.id", fields.join('|')],
+            ["type","article"],
             // ["locations.source.id", org_id],
         ])
         const openalex_filter = [...filters].map(([k, v]) => `${k}:${v}`).join(',');
 
-        /*console.log("DEBUG - url:", 'https://api.openalex.org/works?' + new URLSearchParams({
+        console.log("DEBUG - url:", 'https://api.openalex.org/works?' + new URLSearchParams({
             filter: openalex_filter,
             sort: 'cited_by_count:desc',
             page: '1',
             per_page: '1',
-        }).toString());*/
+        }).toString() + `&mailto=${process.env.EMAIL_ADDRESS}`);
 
         const response = await fetch('https://api.openalex.org/works?' + new URLSearchParams({
             filter: openalex_filter,
             sort: 'cited_by_count:desc',
             page: '1',
             per_page: '1',
-        }).toString());
-
+        }).toString() + `&mailto=${process.env.EMAIL_ADDRESS}`);
+        
         if (response.ok) {
             const data = await response.json();
             const openalex_result = data.results;
@@ -67,3 +68,5 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
     // console.log("DEBUG - papers: ", papers);
     return papers;
 }
+
+get_papers([1, 5, 10, 50, 100], ["11", "17", "28", "24", "30", "13"]).then(console.log);
