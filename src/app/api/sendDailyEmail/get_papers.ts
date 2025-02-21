@@ -68,5 +68,3 @@ export async function get_papers (yeardeltas:number[], fields:string[]) {
     // console.log("DEBUG - papers: ", papers);
     return papers;
 }
-
-get_papers([1, 5, 10, 50, 100], ["11", "17", "28", "24", "30", "13"]).then(console.log);
