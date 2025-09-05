@@ -49,6 +49,9 @@ export async function GET(request: NextRequest) {
         
         const snapshot = await emailsRef.get();
         console.log(`Processing ${snapshot.docs.length} users ${isAdminOnly ? '(ADMIN ONLY MODE)' : ''}`);
+
+        let lastBody = "";
+
         
         // CRITICAL FIX: Process users sequentially, not with map
         for (const doc of snapshot.docs) {
@@ -82,6 +85,8 @@ export async function GET(request: NextRequest) {
                     subject: emailSubject,
                     html: emailBody,
                 });
+
+                lastBody = emailBody;
                 
                 console.log(`Email sent successfully to ${emailData.email}`);
                 
@@ -97,7 +102,8 @@ export async function GET(request: NextRequest) {
         return new Response(JSON.stringify({ 
             success: true, 
             processed: snapshot.docs.length,
-            mode: isAdminOnly ? 'admin-only' : 'production'
+            mode: isAdminOnly ? 'admin-only' : 'production',
+            lastBody: lastBody,
         }), { status: 201});
     } catch (error) {
         console.error('Error sending emails:', error);
