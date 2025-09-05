@@ -24,17 +24,22 @@ export async function GET(request: NextRequest) {
             });
         }
         
-        const emailsRef = dbAdmin.collection('users').where('subscribed', '==', true);
+        const isAdminOnly = true;
+
+        let emailsRef = dbAdmin.collection('users').where('subscribed', '==', true);
+
+        if (isAdminOnly) {
+            emailsRef = emailsRef.where('email', '==', process.env.ADMIN_EMAIL);
+        }
+
         const snapshot = await emailsRef.get();
-        // console.log("DEBUG - snapshot: ", snapshot);
+        
         snapshot.docs.map(async (doc) => {
             const emailData = doc.data();
             const unsubscribeToken = generateUnsubscribeToken(emailData.email);
             const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${emailData.email}&token=${unsubscribeToken}`;
 
             const papers = await get_papers(emailData.intervals, emailData.subjects);
-
-            // console.log("DEBUG", papers);
 
             if (papers.length === 0) {
                 return;
