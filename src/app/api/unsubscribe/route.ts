@@ -1,18 +1,18 @@
 import { dbAdmin } from "../../../lib/firebaseAdmin";
-import crypto from 'crypto';
+// import crypto from 'crypto';
 
 export async function GET(request:Request) {
     const url = new URL(request.url);
     const email = url.searchParams.get('email');
-    const token = url.searchParams.get('token');
+    // const token = url.searchParams.get('token');
 
     // Verify the token
-    const secret = process.env.UNSUBSCRIBE_SECRET;
+    /*const secret = process.env.UNSUBSCRIBE_SECRET;
     const expectedToken = crypto.createHash('sha256').update(`${email}${secret}`).digest('hex');
 
     if (token !== expectedToken) {
         return new Response(JSON.stringify({ success: false }), { status: 400 });
-    }
+    }*/
 
     try {
         // Update user's subscription status in Firestore
