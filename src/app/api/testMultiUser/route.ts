@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         // Get real users from DB but limit the count
         const emailsRef = dbAdmin.collection('users')
             .where('subscribed', '==', true)
-            .limit(config.userCount || 1);
+            .where('email', '==', process.env.ADMIN_EMAIL);
         
         const snapshot = await emailsRef.get();
         console.log(`Found ${snapshot.docs.length} users in database`);
