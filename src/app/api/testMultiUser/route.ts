@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
             } catch (userError) {
                 console.error(`Error processing user ${emailData.email}:`, userError);
                 metrics.failedEmails++;
-                metrics.errors.push(`${emailData.email}: ${userError.message}`);
+                metrics.errors.push(`${emailData.email}: ${userError instanceof Error ? userError.message : String(userError)}`);
             }
         }
 
