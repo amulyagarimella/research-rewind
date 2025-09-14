@@ -270,8 +270,7 @@ async function scheduleNextExecution() {
 }
 
 async function sendEmailToUser(userData: any, papers: Paper[]) {
-  const unsubscribeToken = generateUnsubscribeToken(userData.email);
-  const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${userData.email}&token=${unsubscribeToken}`;
+  const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${userData.email}`;
   
   // Add admin-only indicator to subject if in admin mode
   const emailSubject = `Research Rewind ${DateTime.now().setZone('America/New_York').toISODate()}`;
