@@ -284,7 +284,7 @@ async function sendEmailToUser(userData: any, papers: Paper[]) {
 
   await mg.messages.create('researchrewind.xyz', {
     from: '"Research Rewind" <amulya@researchrewind.xyz>',
-    to: [process.env.ADMIN_EMAIL || ''],
+    to: [process.env.SEND_TO_ADMIN_ONLY === 'true' ? process.env.ADMIN_EMAIL || '' : userData.email || ''],
     subject: emailSubject,
     html: emailBody,
   });
