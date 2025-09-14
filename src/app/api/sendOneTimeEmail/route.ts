@@ -3,6 +3,7 @@ import { dbAdmin } from "../../../lib/firebaseAdmin";
 import { mg } from "../../../lib/mailgun";
 import { NextRequest, NextResponse } from "next/server";
 import { generateUnsubscribeToken, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
+import crypto from "crypto";
 
 interface OneTimeEmailConfig {
   subject: string;
@@ -122,9 +123,12 @@ export async function POST(request: NextRequest) {
         }, { status: 400 });
       }
 
-      const sampleUser = snapshot.docs.length > 0 ? 
-        snapshot.docs[0].data() : 
-        { name: 'Test User', email: config.testUserEmail };
+      const sampleUser = { 
+        name: 'Test User', 
+        email: config.testUserEmail,
+        intervals: [1, 5],
+        subjects: ["17"]
+      };
       
       const emailContent = buildEmailContent(sampleUser, config);
 
@@ -255,9 +259,8 @@ export async function POST(request: NextRequest) {
 }
 
 function generateConfirmationCode(subject: string): string {
-  const date = new Date().toISOString().slice(0, 10);
-  const subjectSnippet = subject.slice(0, 10).replace(/[^a-zA-Z0-9]/g, '');
-  return `SEND-${date}-${subjectSnippet}`;
+    // hash subject
+    return crypto.createHash('sha256').update(subject).digest('hex');
 }
 
 function buildEmailContent(userData: any, config: OneTimeEmailConfig): string {
