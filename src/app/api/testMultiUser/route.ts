@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         const config: TestConfig = {
             userCount: body.userCount || 10,
             actualSend: body.actualSend || false,
-            testUserEmail: body.testUserEmail || process.env.ADMIN_EMAIL,
+            testUserEmail: process.env.ADMIN_EMAIL,
             useBatching: body.useBatching !== false // default to true
         };
 
@@ -253,10 +253,10 @@ async function sendEmail(emailData: any, papers: Paper[], config: TestConfig, me
     const emailBody = `Hi ${emailData.name},<br><br>[TEST EMAIL - User: ${emailData.email}] Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
 
     if (config.actualSend) {
-        const targetEmail = config.testUserEmail || emailData.email;
+        const targetEmail = config.testUserEmail;
         await mg.messages.create('researchrewind.xyz', {
             from: '"Research Rewind TEST" <amulya@researchrewind.xyz>',
-            to: [targetEmail],
+            to: [targetEmail || ''],
             subject: emailSubject,
             html: emailBody,
         });
