@@ -18,7 +18,7 @@ interface ProcessingState {
 }
 
 const BATCH_SIZE = 5; // Conservative batch size for free plan
-const MAX_EXECUTION_TIME = 8000; // 8 seconds max to stay under 10s limit
+const MAX_EXECUTION_TIME = 1000*58; // 60 seconds max
 
 export async function GET(request: NextRequest) {
   const executionStart = Date.now();
