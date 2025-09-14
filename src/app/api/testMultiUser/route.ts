@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         const config: TestConfig = {
             userCount: body.userCount || 10,
             actualSend: body.actualSend || false,
-            testUserEmail: process.env.ADMIN_EMAIL,
+            testUserEmail: body.testUserEmail || process.env.ADMIN_EMAIL,
             useBatching: body.useBatching !== false // default to true
         };
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         // Get users from DB
         const emailsRef = dbAdmin.collection('users')
             .where('subscribed', '==', true)
-            .limit(config.userCount || 1);
+            .limit(config.userCount);
         
         const snapshot = await emailsRef.get();
         console.log(`Found ${snapshot.docs.length} users in database`);
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
                 } catch (error) {
                     console.error(`Error sending email to ${emailData.email}:`, error);
                     metrics.failedEmails++;
-                    metrics.errors.push(`${emailData.email}: ${error instanceof Error ? error.message : String(error)}`);
+                    metrics.errors.push(`${emailData.email}: ${error.message}`);
                 }
             }
 
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
                 } catch (userError) {
                     console.error(`Error processing user ${emailData.email}:`, userError);
                     metrics.failedEmails++;
-                    metrics.errors.push(`${emailData.email}: ${userError instanceof Error ? userError.message : String(userError)}`);
+                    metrics.errors.push(`${emailData.email}: ${userError.message}`);
                 }
             }
         }
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
         console.log = originalLog;
         return new Response(JSON.stringify({
             success: false,
-            error: error instanceof Error ? error.message : String(error), 
+            error: error.message,
             logs
         }), { status: 500 });
     }
@@ -249,10 +249,10 @@ async function sendEmail(emailData: any, papers: Paper[], config: TestConfig, me
     const emailBody = `Hi ${emailData.name},<br><br>[TEST EMAIL - User: ${emailData.email}] Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
 
     if (config.actualSend) {
-        const targetEmail = process.env.ADMIN_EMAIL;
+        const targetEmail = config.testUserEmail || emailData.email;
         await mg.messages.create('researchrewind.xyz', {
             from: '"Research Rewind TEST" <amulya@researchrewind.xyz>',
-            to: [targetEmail || ''],
+            to: [targetEmail],
             subject: emailSubject,
             html: emailBody,
         });

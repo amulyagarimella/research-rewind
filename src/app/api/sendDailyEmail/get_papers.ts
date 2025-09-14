@@ -184,8 +184,66 @@ export async function get_papers_batch(userRequests: UserRequest[]): Promise<Bat
         }
     }
     
-    console.log(`Batch complete: ${userRequests.length} users processed with ${totalApiCalls} total API calls`);
-    console.log(`Cache efficiency: ${Object.keys(requestCache).length} unique requests cached`);
-    
     return results;
 }
+
+// Export the original function as well for backward compatibility
+export async function get_papers_original(yeardeltas: number[], fields: string[]): Promise<Paper[]> {
+    const today = DateTime.now().setZone('America/New_York');
+    const papers: Paper[] = [];
+    
+    console.log(`Fetching papers (original method) for ${yeardeltas.length} year deltas and ${fields.length} fields`);
+    
+    for (let i = 0; i < yeardeltas.length; i++) {
+        // Rate limiting: 100ms delay between requests
+        if (i > 0) {
+            await delay(100);
+        }
+        
+        const prev_date = today.minus({ years: yeardeltas[i] });
+        const prev_date_str = prev_date.toISODate();
+
+        const filters = new Map<string, string>([
+            ["publication_date", prev_date_str],
+            ["topics.field.id", fields.join('|')],
+            ["type", "article"],
+        ]);
+        
+        const openalex_filter = [...filters].map(([k, v]) => `${k}:${v}`).join(',');
+        const url = 'https://api.openalex.org/works?' + new URLSearchParams({
+            filter: openalex_filter,
+            sort: 'cited_by_count:desc',
+            page: '1',
+            per_page: '1',
+        }).toString() + `&mailto=${process.env.EMAIL_ADDRESS}`;
+
+        try {
+            const response = await fetch(url);
+            
+            if (response.ok) {
+                const data = await response.json();
+                const openalex_result = data.results;
+                
+                if (openalex_result.length > 0) {
+                    const res = openalex_result[0];
+                    const paper: Paper = {
+                        year_delta: yeardeltas[i],
+                        title: res.title,
+                        publication_date: res.publication_date,
+                        main_field: res.topics?.[0]?.subfield?.display_name || 'Unknown',
+                        authors: res.authorships?.map((author: any) => author.author.display_name) || [],
+                        doi: res.doi,
+                        url: res.primary_location?.landing_page_url || res.doi,
+                    };
+                    papers.push(paper);
+                }
+            } else if (response.status === 429) {
+                await delay(1000);
+            }
+        } catch (error) {
+            console.error(`Request failed for year delta ${yeardeltas[i]}:`, error);
+        }
+    }
+    
+    return papers;
+}   
