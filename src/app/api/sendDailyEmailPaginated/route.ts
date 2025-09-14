@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     const stateDocRef = dbAdmin.collection('processing_state').doc(today || '');
     
     // Get or initialize processing state
-    let state: ProcessingState = await getOrCreateProcessingState(stateDocRef, today || '');
+    const state: ProcessingState = await getOrCreateProcessingState(stateDocRef, today || '');
     
     if (state.status === 'completed') {
       return NextResponse.json({ 
