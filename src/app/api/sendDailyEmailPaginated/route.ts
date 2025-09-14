@@ -17,7 +17,7 @@ interface ProcessingState {
   startTime?: number;
 }
 
-const BATCH_SIZE = 15; // Conservative batch size for free plan
+const BATCH_SIZE = 5; // Conservative batch size for free plan
 const MAX_EXECUTION_TIME = 8000; // 8 seconds max to stay under 10s limit
 
 export async function GET(request: NextRequest) {
