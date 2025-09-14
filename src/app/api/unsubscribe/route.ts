@@ -13,6 +13,9 @@ export async function GET(request:Request) {
     if (token !== expectedToken) {
         return new Response(JSON.stringify({ success: false }), { status: 400 });
     }*/
+   if (!email) {
+        return new Response(JSON.stringify({ success: false,error: 'Email is required in the URL, e.g. /api/unsubscribe?email=test@test.com'  }), { status: 400});
+   }
 
     try {
         // Update user's subscription status in Firestore
