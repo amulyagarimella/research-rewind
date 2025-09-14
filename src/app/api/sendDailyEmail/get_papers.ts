@@ -158,7 +158,6 @@ export async function get_papers_batch(userRequests: UserRequest[]): Promise<Bat
     Object.keys(requestCache).forEach(key => delete requestCache[key]);
     
     const results: BatchResult[] = [];
-    let totalApiCalls = 0;
     
     for (let i = 0; i < userRequests.length; i++) {
         const user = userRequests[i];
@@ -170,7 +169,6 @@ export async function get_papers_batch(userRequests: UserRequest[]): Promise<Bat
         
         const endApiCalls = Object.keys(requestCache).length;
         const apiCallsForThisUser = endApiCalls - startApiCalls;
-        totalApiCalls += apiCallsForThisUser;
         
         results.push({
             userId: user.userId,

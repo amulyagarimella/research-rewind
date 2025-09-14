@@ -1,7 +1,7 @@
 // src/app/api/testMultiUser/route.ts
 import { dbAdmin } from "../../../lib/firebaseAdmin";
 import { mg } from "../../../lib/mailgun";
-import { Paper, get_papers_batch, UserRequest, BatchResult } from "../sendDailyEmail/get_papers";
+import { Paper, get_papers_batch, UserRequest } from "../sendDailyEmail/get_papers";
 import { DateTime } from "ts-luxon";
 import { NextRequest } from "next/server";
 import { generateUnsubscribeToken, feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
