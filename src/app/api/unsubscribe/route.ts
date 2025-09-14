@@ -4,15 +4,7 @@ import { dbAdmin } from "../../../lib/firebaseAdmin";
 export async function GET(request:Request) {
     const url = new URL(request.url);
     const email = url.searchParams.get('email');
-    // const token = url.searchParams.get('token');
 
-    // Verify the token
-    /*const secret = process.env.UNSUBSCRIBE_SECRET;
-    const expectedToken = crypto.createHash('sha256').update(`${email}${secret}`).digest('hex');
-
-    if (token !== expectedToken) {
-        return new Response(JSON.stringify({ success: false }), { status: 400 });
-    }*/
    if (!email) {
         return new Response(JSON.stringify({ success: false,error: 'Email is required in the URL, e.g. /api/unsubscribe?email=test@test.com'  }), { status: 400});
    }

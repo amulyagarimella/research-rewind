@@ -274,19 +274,18 @@ async function sendEmailToUser(userData: any, papers: Paper[]) {
   const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${userData.email}&token=${unsubscribeToken}`;
   
   // Add admin-only indicator to subject if in admin mode
-  const isAdminOnly = process.env.SEND_TO_ADMIN_ONLY === 'true';
-  const emailSubject = `${isAdminOnly ? '[ADMIN-ONLY TEST] ' : ''}Research Rewind ${DateTime.now().setZone('America/New_York').toISODate()}`;
+  const emailSubject = `Research Rewind ${DateTime.now().setZone('America/New_York').toISODate()}`;
   
   const paperBody = papers.map((paper: Paper) => 
     `<b>${paper.year_delta} year${paper.year_delta > 1 ? "s" : ""} ago (${paper.publication_date}):</b> ${generateHTMLLink(paper.doi, paper.title)}${formatAuthors(paper.authors)} <br>(Topic: ${paper.main_field})<br><br>`
   ).join("");
 
   const editPrefs = `Edit your preferences anytime by ${generateHTMLLink(getBaseUrl(), "re-signing up")} with the same email address.<br>`;
-  const emailBody = `Hi ${userData.name},<br><br>${isAdminOnly ? '[ADMIN-ONLY TEST MODE]<br><br>' : ''}Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
+  const emailBody = `Hi ${userData.name},<br><br>Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
 
   await mg.messages.create('researchrewind.xyz', {
     from: '"Research Rewind" <amulya@researchrewind.xyz>',
-    to: [userData.email],
+    to: [process.env.SEND_TO_ADMIN_ONLY === 'true' ? process.env.ADMIN_EMAIL : userData.email || ''],
     subject: emailSubject,
     html: emailBody,
   });

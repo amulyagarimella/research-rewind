@@ -3,7 +3,7 @@ import { mg } from "../../../lib/mailgun";
 import { Paper, get_papers } from "./get_papers";
 import { DateTime } from "ts-luxon";
 import { NextRequest } from "next/server";
-import { generateUnsubscribeToken, feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
+import { feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
 
 function formatAuthors(authors:string[]) {
     if (authors.length === 0) {
@@ -59,8 +59,7 @@ export async function GET(request: NextRequest) {
             console.log(`Processing user: ${emailData.email}`);
             
             try {
-                const unsubscribeToken = generateUnsubscribeToken(emailData.email);
-                const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${emailData.email}&token=${unsubscribeToken}`;
+                const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${emailData.email}}`;
 
                 const papers = await get_papers(emailData.intervals, emailData.subjects);
 
