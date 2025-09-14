@@ -4,7 +4,7 @@ import { mg } from "../../../lib/mailgun";
 import { Paper, get_papers_batch, UserRequest } from "../sendDailyEmail/get_papers";
 import { DateTime } from "ts-luxon";
 import { NextRequest, NextResponse } from "next/server";
-import { generateUnsubscribeToken, feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
+import { feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
 
 // Track processing state in Firebase
 interface ProcessingState {
