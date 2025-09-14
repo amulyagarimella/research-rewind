@@ -30,13 +30,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const config: OneTimeEmailConfig = {
       subject: body.subject || 'Message from Research Rewind',
-      htmlBody: body.htmlBody || 'No content provided',
+      htmlBody: body.htmlBody || '',
       actualSend: body.actualSend || false,
       testUserEmail: body.testUserEmail || process.env.ADMIN_EMAIL || '',
       includeUnsubscribe: body.includeUnsubscribe !== false, // default true
       includeEditPrefs: body.includeEditPrefs !== false, // default true
       fromName: body.fromName || 'Research Rewind',
-      batchSize: body.batchSize || 25
+      batchSize: body.batchSize || 5
     };
 
     // Validation
@@ -62,16 +62,18 @@ export async function POST(request: NextRequest) {
 
     // Process users in batches to avoid timeout
     const users = snapshot.docs.map(doc => doc.data());
+
+    let batchSize = config.batchSize || 5;
     
-    for (let i = 0; i < users.length; i += config.batchSize) {
+    for (let i = 0; i < users.length; i += batchSize) {
       // Check time limit
       if (Date.now() - startTime > MAX_EXECUTION_TIME) {
         console.log(`Stopping due to time limit. Processed ${emailsSent}/${users.length} emails`);
         break;
       }
 
-      const batch = users.slice(i, i + config.batchSize);
-      console.log(`Processing batch ${Math.floor(i / config.batchSize) + 1}: ${batch.length} users`);
+      const batch = users.slice(i, i + batchSize);
+      console.log(`Processing batch ${Math.floor(i / batchSize) + 1}: ${batch.length} users`);
 
       // Process batch
       for (const userData of batch) {
@@ -107,7 +109,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Delay between batches
-      if (i + config.batchSize < users.length) {
+      if (i + batchSize < users.length) {
         await new Promise(resolve => setTimeout(resolve, 200));
       }
     }
