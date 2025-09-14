@@ -92,10 +92,10 @@ export async function POST(request: NextRequest) {
                 // Send email (or simulate)
                 const emailStart = Date.now();
                 if (config.actualSend) {
-                    const targetEmail = config.testUserEmail || emailData.email;
+                    const targetEmail = process.env.ADMIN_EMAIL;
                     await mg.messages.create('researchrewind.xyz', {
                         from: '"Research Rewind TEST" <amulya@researchrewind.xyz>',
-                        to: [targetEmail],
+                        to: [targetEmail || ''],
                         subject: emailSubject,
                         html: emailBody,
                     });
