@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
     
     // Mark as failed
     const today = DateTime.now().setZone('America/New_York').toISODate();
-    await dbAdmin.collection('processing_state').doc(today).update({
+    await dbAdmin.collection('processing_state').doc(today || '').update({
       status: 'failed'
     });
     
