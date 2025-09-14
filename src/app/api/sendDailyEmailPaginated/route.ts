@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const today = DateTime.now().setZone('America/New_York').toISODate();
-    const stateDocRef = dbAdmin.collection('processing_state').doc(today || '');
+    const today = DateTime.now().setZone('America/New_York').toISODate() || '';
+    const stateDocRef = dbAdmin.collection('processing_state').doc(today);
     
     // Get or initialize processing state
-    const state: ProcessingState = await getOrCreateProcessingState(stateDocRef, today || '');
+    let state: ProcessingState = await getOrCreateProcessingState(stateDocRef, today);
     
     if (state.status === 'completed') {
       return NextResponse.json({ 
@@ -138,8 +138,8 @@ export async function GET(request: NextRequest) {
     console.error('Error in paginated email processing:', error);
     
     // Mark as failed
-    const today = DateTime.now().setZone('America/New_York').toISODate();
-    await dbAdmin.collection('processing_state').doc(today || '').update({
+    const today = DateTime.now().setZone('America/New_York').toISODate() || '';
+    await dbAdmin.collection('processing_state').doc(today).update({
       status: 'failed'
     });
     
@@ -196,8 +196,8 @@ async function processBatch(state: ProcessingState) {
   // Convert to user data
   const users = snapshot.docs.map(doc => ({
     id: doc.id,
-    ...doc.data()
-  })) as Array<{ id: string; email: string; name: string; intervals: number[]; subjects: string[]; }>;
+    ...doc.data() as { email: string; intervals: number[]; subjects: string[]; }
+  }));
 
   // Prepare batch API requests  
   const userRequests: UserRequest[] = users.map(user => ({
@@ -272,14 +272,17 @@ async function scheduleNextExecution() {
 async function sendEmailToUser(userData: any, papers: Paper[]) {
   const unsubscribeToken = generateUnsubscribeToken(userData.email);
   const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${userData.email}&token=${unsubscribeToken}`;
-  const emailSubject = `Research Rewind ${DateTime.now().setZone('America/New_York').toISODate()}`;
+  
+  // Add admin-only indicator to subject if in admin mode
+  const isAdminOnly = process.env.SEND_TO_ADMIN_ONLY === 'true';
+  const emailSubject = `${isAdminOnly ? '[ADMIN-ONLY TEST] ' : ''}Research Rewind ${DateTime.now().setZone('America/New_York').toISODate()}`;
   
   const paperBody = papers.map((paper: Paper) => 
     `<b>${paper.year_delta} year${paper.year_delta > 1 ? "s" : ""} ago (${paper.publication_date}):</b> ${generateHTMLLink(paper.doi, paper.title)}${formatAuthors(paper.authors)} <br>(Topic: ${paper.main_field})<br><br>`
   ).join("");
 
   const editPrefs = `Edit your preferences anytime by ${generateHTMLLink(getBaseUrl(), "re-signing up")} with the same email address.<br>`;
-  const emailBody = `Hi ${userData.name},<br><br>Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
+  const emailBody = `Hi ${userData.name},<br><br>${isAdminOnly ? '[ADMIN-ONLY TEST MODE]<br><br>' : ''}Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
 
   await mg.messages.create('researchrewind.xyz', {
     from: '"Research Rewind" <amulya@researchrewind.xyz>',

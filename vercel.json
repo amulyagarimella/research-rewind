@@ -1,6 +1,6 @@
 {
     "crons": [{
-      "path": "/api/sendDailyEmail",
+      "path": "/api/sendDailyEmailPaginated",
       "schedule": "0 9 * * *"
     }]
   }
