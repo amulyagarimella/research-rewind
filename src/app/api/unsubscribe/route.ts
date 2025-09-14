@@ -28,7 +28,7 @@ export async function GET(request:Request) {
             });*/
             return new Response(JSON.stringify({ success: true }), { status: 201 });
         } else {
-            return new Response(JSON.stringify({ success: false }), { status: 404 });
+            return new Response(JSON.stringify({ success: false,error: 'Your email was not found in our database; you are already unsubscribed.'  }), { status: 400});
         }
     } catch (error) {
         console.error('Error unsubscribing:', error);
