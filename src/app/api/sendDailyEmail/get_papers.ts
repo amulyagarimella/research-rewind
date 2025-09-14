@@ -32,7 +32,7 @@ async function fetchPaperForDate(yearDelta: number, fields: string[]): Promise<P
     const prev_date_str = prev_date.toISODate();
 
     const filters = new Map<string, string>([
-        ["publication_date", prev_date_str],
+        ["publication_date", prev_date_str || ""],
         ["topics.field.id", fields.join('|')],
         ["type", "article"],
     ]);
@@ -204,7 +204,7 @@ export async function get_papers_original(yeardeltas: number[], fields: string[]
         const prev_date_str = prev_date.toISODate();
 
         const filters = new Map<string, string>([
-            ["publication_date", prev_date_str],
+            ["publication_date", prev_date_str || ""],
             ["topics.field.id", fields.join('|')],
             ["type", "article"],
         ]);

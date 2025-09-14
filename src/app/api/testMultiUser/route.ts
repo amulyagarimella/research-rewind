@@ -40,14 +40,18 @@ export async function POST(request: NextRequest) {
         // Get users from DB
         const emailsRef = dbAdmin.collection('users')
             .where('subscribed', '==', true)
-            .limit(config.userCount);
+            .limit(config.userCount || 1);
+        
         
         const snapshot = await emailsRef.get();
-        console.log(`Found ${snapshot.docs.length} users in database`);
+        const realUsers = snapshot.docs.map(doc => doc.data());
+        const syntheticUsers = generateSyntheticUsers(realUsers, config.userCount || 1);
+        
+        console.log(`Found ${syntheticUsers.length} users in database`);
 
         // Track metrics
         const metrics = {
-            totalUsers: snapshot.docs.length,
+            totalUsers: syntheticUsers.length,
             successfulEmails: 0,
             failedEmails: 0,
             totalApiRequests: 0,
@@ -63,7 +67,7 @@ export async function POST(request: NextRequest) {
             console.log("Using batched API approach");
             
             // Prepare batch requests
-            const userRequests: UserRequest[] = snapshot.docs.map(doc => {
+            const userRequests: UserRequest[] = syntheticUsers.map(doc => {
                 const data = doc.data();
                 return {
                     userId: data.email,
@@ -82,8 +86,8 @@ export async function POST(request: NextRequest) {
             metrics.uniqueApiRequests = metrics.totalApiRequests; // Already deduplicated
 
             // Send emails
-            for (let i = 0; i < snapshot.docs.length; i++) {
-                const doc = snapshot.docs[i];
+            for (let i = 0; i < syntheticUsers.length; i++) {
+                const doc = syntheticUsers[i];
                 const emailData = doc.data();
                 const batchResult = batchResults.find(r => r.userId === emailData.email);
                 
@@ -97,7 +101,7 @@ export async function POST(request: NextRequest) {
                 } catch (error) {
                     console.error(`Error sending email to ${emailData.email}:`, error);
                     metrics.failedEmails++;
-                    metrics.errors.push(`${emailData.email}: ${error.message}`);
+                    metrics.errors.push(`${emailData.email}: ${error instanceof Error ? error.message : String(error)}`);
                 }
             }
 
@@ -105,11 +109,11 @@ export async function POST(request: NextRequest) {
             // SEQUENTIAL APPROACH (original)
             console.log("Using sequential API approach");
             
-            for (let i = 0; i < snapshot.docs.length; i++) {
-                const doc = snapshot.docs[i];
+            for (let i = 0; i < syntheticUsers.length; i++) {
+                const doc = syntheticUsers[i];
                 const emailData = doc.data();
                 
-                console.log(`Processing user ${i + 1}/${snapshot.docs.length}: ${emailData.email}`);
+                console.log(`Processing user ${i + 1}/${syntheticUsers.length}: ${emailData.email}`);
                 
                 try {
                     // Time API requests (old way)
@@ -129,14 +133,14 @@ export async function POST(request: NextRequest) {
                     await sendEmail(emailData, papers, config, metrics);
                     
                     // Rate limiting between users
-                    if (i < snapshot.docs.length - 1) {
+                    if (i < syntheticUsers.length - 1) {
                         await new Promise(resolve => setTimeout(resolve, 200));
                     }
                     
                 } catch (userError) {
                     console.error(`Error processing user ${emailData.email}:`, userError);
                     metrics.failedEmails++;
-                    metrics.errors.push(`${emailData.email}: ${userError.message}`);
+                    metrics.errors.push(`${emailData.email}: ${userError instanceof Error ? userError.message : String(userError)}`);
                 }
             }
         }
