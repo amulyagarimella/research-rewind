@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Process users in batches to avoid timeout
     const users = snapshot.docs.map(doc => doc.data());
 
-    let batchSize = config.batchSize || 5;
+    const batchSize = config.batchSize || 5;
     
     for (let i = 0; i < users.length; i += batchSize) {
       // Check time limit
