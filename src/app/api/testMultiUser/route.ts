@@ -67,14 +67,11 @@ export async function POST(request: NextRequest) {
             console.log("Using batched API approach");
             
             // Prepare batch requests
-            const userRequests: UserRequest[] = syntheticUsers.map(doc => {
-                const data = doc.data();
-                return {
-                    userId: data.email,
-                    intervals: data.intervals,
-                    subjects: data.subjects
-                };
-            });
+            const userRequests: UserRequest[] = syntheticUsers.map(userData => ({
+                userId: userData.email,
+                intervals: userData.intervals,
+                subjects: userData.subjects
+            }));
 
             // Execute batch
             const batchStart = Date.now();
@@ -87,21 +84,20 @@ export async function POST(request: NextRequest) {
 
             // Send emails
             for (let i = 0; i < syntheticUsers.length; i++) {
-                const doc = syntheticUsers[i];
-                const emailData = doc.data();
-                const batchResult = batchResults.find(r => r.userId === emailData.email);
+                const userData = syntheticUsers[i];
+                const batchResult = batchResults.find(r => r.userId === userData.email);
                 
                 if (!batchResult || batchResult.papers.length === 0) {
-                    console.log(`No papers found for ${emailData.email}`);
+                    console.log(`No papers found for ${userData.email}`);
                     continue;
                 }
 
                 try {
-                    await sendEmail(emailData, batchResult.papers, config, metrics);
+                    await sendEmail(userData, batchResult.papers, config, metrics);
                 } catch (error) {
-                    console.error(`Error sending email to ${emailData.email}:`, error);
+                    console.error(`Error sending email to ${userData.email}:`, error);
                     metrics.failedEmails++;
-                    metrics.errors.push(`${emailData.email}: ${error instanceof Error ? error.message : String(error)}`);
+                    metrics.errors.push(`${userData.email}: ${error instanceof Error ? error.message : String(error)}`);
                 }
             }
 
@@ -110,27 +106,26 @@ export async function POST(request: NextRequest) {
             console.log("Using sequential API approach");
             
             for (let i = 0; i < syntheticUsers.length; i++) {
-                const doc = syntheticUsers[i];
-                const emailData = doc.data();
+                const userData = syntheticUsers[i];
                 
-                console.log(`Processing user ${i + 1}/${syntheticUsers.length}: ${emailData.email}`);
+                console.log(`Processing user ${i + 1}/${syntheticUsers.length}: ${userData.email}`);
                 
                 try {
                     // Time API requests (old way)
                     const apiStart = Date.now();
                     const { get_papers } = await import("../sendDailyEmail/get_papers");
-                    const papers = await get_papers(emailData.intervals, emailData.subjects);
+                    const papers = await get_papers(userData.intervals, userData.subjects);
                     const apiTime = Date.now() - apiStart;
                     
-                    metrics.totalApiRequests += emailData.intervals.length;
+                    metrics.totalApiRequests += userData.intervals.length;
                     metrics.apiRequestTime += apiTime;
                     
                     if (papers.length === 0) {
-                        console.log(`No papers found for ${emailData.email}`);
+                        console.log(`No papers found for ${userData.email}`);
                         continue;
                     }
 
-                    await sendEmail(emailData, papers, config, metrics);
+                    await sendEmail(userData, papers, config, metrics);
                     
                     // Rate limiting between users
                     if (i < syntheticUsers.length - 1) {
@@ -138,9 +133,9 @@ export async function POST(request: NextRequest) {
                     }
                     
                 } catch (userError) {
-                    console.error(`Error processing user ${emailData.email}:`, userError);
+                    console.error(`Error processing user ${userData.email}:`, userError);
                     metrics.failedEmails++;
-                    metrics.errors.push(`${emailData.email}: ${userError instanceof Error ? userError.message : String(userError)}`);
+                    metrics.errors.push(`${userData.email}: ${userError instanceof Error ? userError.message : String(userError)}`);
                 }
             }
         }
@@ -238,11 +233,11 @@ function generateSyntheticUsers(realUsers: any[], targetCount: number): any[] {
     return syntheticUsers;
 }
 
-async function sendEmail(emailData: any, papers: Paper[], config: TestConfig, metrics: any) {
+async function sendEmail(userData: any, papers: Paper[], config: TestConfig, metrics: any) {
     const emailStart = Date.now();
     
-    const unsubscribeToken = generateUnsubscribeToken(emailData.email);
-    const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${emailData.email}&token=${unsubscribeToken}`;
+    const unsubscribeToken = generateUnsubscribeToken(userData.email);
+    const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${userData.email}&token=${unsubscribeToken}`;
     const emailSubject = `[TEST${config.useBatching ? '-BATCHED' : '-SEQUENTIAL'}] Research Rewind ${DateTime.now().setZone('America/New_York').toISODate()}`;
     
     const paperBody = papers.map((paper: Paper) => 
@@ -250,7 +245,7 @@ async function sendEmail(emailData: any, papers: Paper[], config: TestConfig, me
     ).join("");
 
     const editPrefs = `Edit your preferences anytime by ${generateHTMLLink(getBaseUrl(), "re-signing up")} with the same email address.<br>`;
-    const emailBody = `Hi ${emailData.name},<br><br>[TEST EMAIL - User: ${emailData.email}] Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
+    const emailBody = `Hi ${userData.name},<br><br>[TEST EMAIL - User: ${userData.email}] Here's your research rewind for today.<br><br>${paperBody}${editPrefs}${generateHTMLLink(feedbackLink, "Feedback?")} <br> ${generateHTMLLink(unsubscribeLink, "Unsubscribe")}`;
 
     if (config.actualSend) {
         const targetEmail = config.testUserEmail;
@@ -262,7 +257,7 @@ async function sendEmail(emailData: any, papers: Paper[], config: TestConfig, me
         });
         console.log(`Email sent to ${targetEmail}`);
     } else {
-        console.log(`Email simulated for ${emailData.email} (${emailBody.length} chars)`);
+        console.log(`Email simulated for ${userData.email} (${emailBody.length} chars)`);
     }
     
     const emailTime = Date.now() - emailStart;
