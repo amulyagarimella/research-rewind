@@ -1,13 +1,12 @@
 import { mg } from "../../../lib/mailgun";
-import { generateUnsubscribeToken, feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
+import { feedbackLink, generateHTMLLink, getBaseUrl } from "../../../lib/emailHelpers";
 
 export async function POST(request: Request) {
     try {
         const body = await request.json()
         const { name, email } = body
         // console.log("DEBUG - snapshot: ", snapshot);
-        const unsubscribeToken = generateUnsubscribeToken(email);
-        const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${email}&token=${unsubscribeToken}`;
+        const unsubscribeLink = `${getBaseUrl()}/api/unsubscribe?email=${email}`;
 
         const emailSubject = "Research Rewind - Confirmation";
 
