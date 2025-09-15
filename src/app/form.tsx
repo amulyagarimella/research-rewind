@@ -210,7 +210,7 @@ const FormComponent = ({ subjects, intervals }: FormComponentProps) => {
       <button type="submit" className="main" disabled={loading}>
         {loading ? "Submitting..." : "Submit"}
       </button>
-      {isSubmitted && submissionSuccessful && <span className="thanks">Thanks for signing up!</span>}
+      {isSubmitted && submissionSuccessful && <span className="thanks">Thanks for signing up! Check your email + spam for a confirmation email.</span>}
       {isSubmitted && !submissionSuccessful && <span className="error">Please fill out all fields before submitting!</span>}
     </form>
   );
